@@ -20,7 +20,6 @@ branches=$(git branch | tr -d \*)
 for b in $branches; do
   suffix="${b##*-}"
   git checkout $b
-  echo $b and $suffix
   if [ "$suffix" == "master" ]; then
     git rebase upstream/master
     git push origin $b -f
