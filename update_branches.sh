@@ -12,27 +12,61 @@
 # - a branch from the 4.0 stable branch is trailed by 400
 # - a branch from the 3.11 stable branch is trailed by 311
 # My branches follow this schema: MDL-XXXXX-[master|400|311]
-# The variable MOODLE_DIR can be defined as a variable or
-# passed as an argument and should contain the location to
-# your checked out Moodle git repo.
+#
+# Usage: update_branches.sh [-d <srcdir> ] [ -u <upstream> ]
+#
+# You may also predefine the environment variables
+#   $MOODLE_DIR for the directory where your repo is checked out (default is ~/workspace/moodle)
+#   $MOODLE_UPSTREAM for the upstream reference (default is upstream)
+#
+# Variables can be passed like: export MOODLE_DIR=/path/to/your/moodle_repo
+# before running this script.
 
-if [ ! -z $1 ]; then
-  repodir=$1
-elif [ ! -z $MOODLE_DIR ]; then
-  repodir=$MOODLE_DIR
-else
-  repodir=~/workspace/moodle
+s=''
+for arg in "$@"; do
+  if [ "$arg" == '-d' ] || [ "$arg" == '-u' ]; then
+    s=$arg
+  elif [ "$s" == '-d' ]; then
+    repodir=$arg
+    s=''
+  elif [ "$s" == '-u' ]; then
+    upstream=$arg
+    s=''
+  else
+    echo "Invalid argument or missing switch"
+    echo "Usage: $(basename $0) [-d <srcdir> ] [ -u <upstream> ]"
+    exit 1
+  fi
+done
+
+if [ -z $repodir ]; then
+  if [ ! -z $MOODLE_DIR ]; then
+    repodir=$MOODLE_DIR
+  else
+    repodir=~/workspace/moodle
+  fi
 fi
-
 if [ ! -d $repodir ]; then
   echo "Could not determine location of Moodle code"
   exit 1
 fi
 
+if [ -z $upstream ]; then
+  if [ ! -z $MOODLE_UPSTREAM ]; then
+    upstream=$MOODLE_UPSTREAM
+  else
+    upstream=upstream
+  fi
+fi
+
+echo "upstream: $upstream"
+echo "repository directory: $repodir"
+echo "start rebasing your branches"
+
 CWD=$(pwd)
 cd $repodir
 
-git fetch upstream
+git fetch $upstream
  
 branches=$(git branch | tr -d \*)
 for b in $branches; do
@@ -48,8 +82,8 @@ for b in $branches; do
   
   if [ "$upbranch " != ' ' ]; then
     git checkout $b
-    git rebase upstream/$upbranch
-    git push origin $b -f    
+    git rebase $upstream/$upbranch
+    git push origin $b -f
   fi
 done
 
