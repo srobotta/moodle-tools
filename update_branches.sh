@@ -81,9 +81,11 @@ for b in $branches; do
   fi
   
   if [ "$upbranch " != ' ' ]; then
-    git checkout $b
-    git rebase $upstream/$upbranch
-    git push origin $b -f
+    git checkout $b && git rebase $upstream/$upbranch && git push origin $b -f
+    if [ $? -ne 0 ]; then
+      echo "error updating branch."
+      exit 1
+    fi
   fi
 done
 
