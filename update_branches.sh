@@ -76,8 +76,8 @@ for b in $branches; do
     upbranch=master
   elif [ "$suffix" == "400" ]; then
     upbranch=MOODLE_400_STABLE
-  elif [ "$suffix" == "311" ]; then
-    upbranch=MOODLE_311_STABLE
+  elif [ "$suffix" == "401" ]; then
+    upbranch=MOODLE_401_STABLE
   fi
   
   if [ "$upbranch " != ' ' ]; then
