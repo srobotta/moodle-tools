@@ -16,7 +16,8 @@
 # Usage: update_branches.sh [-d <srcdir> ] [ -u <upstream> ]
 #
 # You may also predefine the environment variables
-#   $MOODLE_DIR for the directory where your repo is checked out (default is ~/workspace/moodle)
+#   $MOODLE_DIR for the directory where your repo is checked out
+#               (default is ~/workspace/moodle)
 #   $MOODLE_UPSTREAM for the upstream reference (default is upstream)
 #
 # Variables can be passed like: export MOODLE_DIR=/path/to/your/moodle_repo
@@ -24,7 +25,10 @@
 
 s=''
 for arg in "$@"; do
-  if [ "$arg" == '-d' ] || [ "$arg" == '-u' ]; then
+  if [ "$arg" == '--help' ]; then
+    head $0 -n 25 | grep  -v \#\! | sed 's|^# \?||g'
+    exit
+  elif [ "$arg" == '-d' ] || [ "$arg" == '-u' ]; then
     s=$arg
   elif [ "$s" == '-d' ]; then
     repodir=$arg
