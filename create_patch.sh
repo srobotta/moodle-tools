@@ -26,8 +26,7 @@ for arg in "$@"; do
   if [ "$arg" == '--help' ]; then
     head $0 -n 22 | grep  -v \#\! | sed 's|^# \?||g'
     exit
-  fi
-  if [ "$arg" == '-s' ]; then
+  elif [ "$arg" == '-s' ]; then
     stdout=1
     s=''
   elif [ "$arg" == '-d' ] || [ "$arg" == '-r' ]; then
