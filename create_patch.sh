@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# When working on a ticket and there are changes commited, backporting to
+# When working on a ticket and there are changes committed, backporting to
 # stable releases may has to be done. Therefore this script is creating a
 # patch file, that can be used to create a commit in a branch from one of
 # these backports.
