@@ -85,7 +85,17 @@ for b in $branches; do
   fi
   
   if [ "$upbranch " != ' ' ]; then
-    git checkout $b && git rebase $upstream/$upbranch && git push origin $b -f
+    git checkout $b
+    if [ $? -ne 0 ]; then
+      echo "Could not checkout branch $b"
+      exit 1
+    fi
+    br_up=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
+    if [ "$br_up" != "$upstream/$upbranch" ]; then
+      echo "skip $b because upstream is not ours but $br_up"
+      continue
+    fi
+    git rebase $upstream/$upbranch && git push origin $b -f
     if [ $? -ne 0 ]; then
       echo "error updating branch."
       exit 1
