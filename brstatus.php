@@ -1,15 +1,17 @@
 <?php
 /**
  * Get a list of your branches and show the ticket status along with the branch.
- * Usage: php brstatus.php [-d <repodir>] [-c <col,col,col ...>] [-m N] [ --help|-h ]
+ * Usage: php brstatus.php [-d <repodir>] [-c <col,col,col ...>] [-m N] [-t <format>] [--help|-h]
  *
  * Arguments:
  * -c: Provide a list of column names that is displayed in the output. Valid column names are:
  *     branch, mdl, title, type, typeId, priority, priorityId, status, statusId,
- *     resolution, resolutionId, created, updated, assignee, reporter
+ *     resolution, resolutionId, created, updated, resolved, assignee, reporter
  * -d: The directory where your moodle repo is checked out. Can be also defined via the
  *     environment variable $MOODLE_DIR. If both are empty, the current working dir is used.
- * -m: max col width, default is 45. Set 0 when truncation of values is not wanted.
+ * -m: Maximum col width, default is 45. Set 0 when truncation of values is not wanted.
+ * -t: The string to format the date/time columns created, updated, and resolved.
+ *     See https://www.php.net/manual/en/datetime.format.php for details, default is: Y-m-d
  */
 
 
@@ -71,9 +73,10 @@ function mbStrPad(string $string, int $length, string $padString = " ", int $pos
  * into a DateTime object. If the string is not parsable then 1.1.1970 is used.
  *
  * @param string $str
+ * @param string $format
  * @return string
  */
-function formatDateTime(string $str): string
+function formatDateTime(string $str, string $format): string
 {
     $months = array_flip(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
     $str = preg_replace_callback('/^(\w+, )(\d+)( \w+ )/', function($item) use ($months) {
@@ -85,11 +88,11 @@ function formatDateTime(string $str): string
     $d = new DateTime();
     $ts = strtotime($str);
     if ($ts === false) {
-        $d->setTimestamp(1);
+        return '';
     } else {
         $d->setTimestamp($ts);
     }
-    return $d->format('Y-m-d H:i');
+    return $d->format($format);
 }
 
 /**
@@ -97,9 +100,10 @@ function formatDateTime(string $str): string
  * the relevant information and store it in an associative array.
  *
  * @param int $issueNo
+ * @param string $dateFormat
  * @return array
  */
-function getTrackerInfo(int $issueNo): array
+function getTrackerInfo(int $issueNo, string $dateFormat): array
 {
     @$xml = simplexml_load_file(rawurlencode(sprintf(
         'https://tracker.moodle.org/si/jira.issueviews:issue-xml/MDL-%1$d/MDL-%1$d.xml', $issueNo
@@ -118,8 +122,9 @@ function getTrackerInfo(int $issueNo): array
         'statusId' => (int)$xml->channel->item->status['id'],
         'resolution' => trim($xml->channel->item->resolution),
         'resolutionId' => (int)$xml->channel->item->resolution['id'],
-        'created' => formatDateTime((string)$xml->channel->item->created),
-        'updated' => formatDateTime((string)$xml->channel->item->updated),
+        'created' => formatDateTime((string)$xml->channel->item->created, $dateFormat),
+        'updated' => formatDateTime((string)$xml->channel->item->updated, $dateFormat),
+        'resolved' => formatDateTime((string)$xml->channel->item->resolved, $dateFormat),
         'assignee' => trim($xml->channel->item->assignee),
         'reporter' => trim($xml->channel->item->reporter),
     ];
@@ -131,9 +136,10 @@ function getTrackerInfo(int $issueNo): array
  * @param array $branches
  * @param array $tableCols
  * @param int $maxWidth
+ * @param string $dateFormat
  * @return void
  */
-function printTable(array $branches, array $tableCols, int $maxWidth)
+function printTable(array $branches, array $tableCols, int $maxWidth, string $dateFormat)
 {
     // start a new table, fill the first row with the desired col names.
     $table = [];
@@ -158,7 +164,7 @@ function printTable(array $branches, array $tableCols, int $maxWidth)
         }
         $mdl = (int)$m[2];
         if (!isset($info[$mdl])) {
-            $info[$mdl] = getTrackerInfo($mdl);
+            $info[$mdl] = getTrackerInfo($mdl, $dateFormat);
         }
         if (empty($info[$mdl])) {
             $table[] = ['branch' => $branch, $colOther => 'no data found'];
@@ -191,9 +197,10 @@ function printTable(array $branches, array $tableCols, int $maxWidth)
 // Main program starts here
 
 // defaults
-$repodir = getenv('$MOODLE_DIR') ?: getcwd();
-$maxWidth = 45;
-$cols = ['branch', 'title', 'status', 'updated', 'assignee'];
+$repodir    = getenv('$MOODLE_DIR') ?: getcwd();
+$maxWidth   = 45;
+$cols       = ['branch', 'title', 'status', 'updated', 'resolved', 'assignee'];
+$dateFormat = 'Y-m-d';
 
 // start handling command line args
 $args = $_SERVER['argv'];
@@ -230,6 +237,11 @@ while ($arg = array_shift($args)) {
             dieNice('Argument -m needs a value of 0 or greater');
         }
         $maxWidth = $intArg === 0 ? PHP_INT_MAX : $intArg;
+    } elseif ($arg === '-t') {
+        $dateFormat = array_shift($args);
+        if (empty($dateFormat)) {
+            dieNice('Argument -t needs a value for the date time format');
+        }
     } elseif ($arg === '--help' || $arg === '-h') {
         $out = false;
         foreach (explode(PHP_EOL, file_get_contents($_SERVER['argv'][0])) as $line) {
@@ -255,4 +267,4 @@ $branches = getBranches($repodir);
 if (empty($branches)) {
     dieNice('No branches found');
 }
-printTable($branches, $cols, $maxWidth);
+printTable($branches, $cols, $maxWidth, $dateFormat);
