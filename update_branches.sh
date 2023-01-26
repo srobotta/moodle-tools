@@ -1,9 +1,15 @@
 #!/bin/bash
 
+### Introduction
+#
 # For the different MDLs that I am working on, I have a branch in my
 # repo. Whenever upstream (the original Moodle repo where I did the fork
 # from) is updated, I need to update my local branches.
-# git remote -v returns your repo locations. In my case I see:
+#
+### Prerequisites
+#
+# The command: git remote -v
+# returns your repo locations. In my case I see:
 # upstream	git://git.moodle.org/moodle.git (fetch)
 # upstream	git://git.moodle.org/moodle.git (push)
 #
@@ -12,6 +18,14 @@
 # - a branch from the 4.0 stable branch is trailed by 400
 # - a branch from the 3.11 stable branch is trailed by 311
 # My branches follow this schema: MDL-XXXXX-[master|400|311]
+# To setup upstream correctly in any branch that I use, the
+# checkout is done like: git -b MDL-XXX-master upstream/master
+# or if it is a release branch: git -b MDL-XXX-401 upstream/MOODLE_401_STABLE
+# If upstream is something different, you may reassign a new source
+# by checking out the branch and then do a:
+# git branch --set-upstream-to upstream/master
+#
+### Script Usage
 #
 # Usage: update_branches.sh [-d <srcdir> ] [ -u <upstream> ]
 #
@@ -22,11 +36,12 @@
 #
 # Variables can be passed like: export MOODLE_DIR=/path/to/your/moodle_repo
 # before running this script.
-
+### End Help <-- do not remove
 s=''
 for arg in "$@"; do
   if [ "$arg" == '--help' ]; then
-    head $0 -n 25 | grep  -v \#\! | sed 's|^# \?||g'
+    end=$(grep -nE '^### End Help' $0 | cut -d ':' -f 1)
+    head $0 -n $(($end - 1)) | grep  -v \#\! | sed 's|^# \?||g'
     exit
   elif [ "$arg" == '-d' ] || [ "$arg" == '-u' ]; then
     s=$arg
@@ -92,7 +107,7 @@ for b in $branches; do
     fi
     br_up=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
     if [ "$br_up" != "$upstream/$upbranch" ]; then
-      echo "skip $b because upstream is not ours but $br_up"
+      echo "skip $b because remote location is not $upstream but $br_up"
       continue
     fi
     git rebase $upstream/$upbranch && git push origin $b -f

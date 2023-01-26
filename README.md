@@ -3,6 +3,9 @@
 Everything inside here should help me in the Moodle development and make tidy tasks easier
 to handle.
 
+Each of these scripts has a --help switch. Use this or look into the source code to get
+more specific information about any of these tools.
+
 ## brstatus.php
 
 This script fetches Moodle tracker information based on the existing branches that are existing
@@ -23,4 +26,4 @@ a patch file that can be used with git apply.
 Runs over all existing branches and does a rebase to the latest upstream version (derived
 from the branch name). This can be used to updates all branches once a weekly release is
 published. If the rebase fails because of a merge conflict, the script stops and the
-issue must be resolved manually. Running this on an up-to-date branch doesn't do any harm. 
+issue must be resolved manually. Running this on an up-to-date branch doesn't do any harm.
