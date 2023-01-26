@@ -20,11 +20,13 @@
 #
 # Variables can be passed like: export MOODLE_DIR=/path/to/your/moodle_repo
 # before running this script.
+### End Help <-- do not remove
 
 s=''
 for arg in "$@"; do
   if [ "$arg" == '--help' ]; then
-    head $0 -n 22 | grep  -v \#\! | sed 's|^# \?||g'
+    end=$(grep -nE '^### End Help' $0 | cut -d ':' -f 1)
+    head $0 -n $(($end - 1)) | grep  -v \#\! | sed 's|^# \?||g'
     exit
   elif [ "$arg" == '-s' ]; then
     stdout=1
