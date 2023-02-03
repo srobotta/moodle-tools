@@ -7,10 +7,11 @@
 # The script makes use of git commands to figure out the current changes
 # from the latest commit to the previous commit.
 #
-# Usage: create_patch.sh [-d <target_dir>] [-r repodir] [-s]
+# Usage: create_patch.sh [-d <target_dir>] [-r repodir] [-l] [-s]
 #
 # Arguments:
 # -d directory where to write the patch file. Default is the current dir.
+# -l list the modified files on standard out without creating a patch file.
 # -r directory where the repository resides in.
 # -s write diff to standard out without creating a patch file.
 #
@@ -30,6 +31,9 @@ for arg in "$@"; do
     exit
   elif [ "$arg" == '-s' ]; then
     stdout=1
+    s=''
+  elif [ "$arg" == '-l' ]; then
+    list=1
     s=''
   elif [ "$arg" == '-d' ] || [ "$arg" == '-r' ]; then
     s=$arg
@@ -78,11 +82,16 @@ a=${rev[0]}
 b=${rev[1]}
 
 # if we want the output to stdout, do it here and quit
-if [ ! -z $stdout ]; then
-  git diff $b $a
+if [ ! -z $stdout ] || [ ! -z $list ]; then
+  if [ ! -z $list ]; then
+    git diff $b $a | grep -E '^\+{3} ' | sed 's/+++ b\///'
+  else
+    git diff $b $a
+  fi
   cd $CWD
   exit 0
 fi
+
 
 # file name for the diff is composed from the MDL number.
 mdl=$(git status | head -n 1 | grep -o '[0-9]*')
