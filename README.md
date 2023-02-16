@@ -27,3 +27,7 @@ Runs over all existing branches and does a rebase to the latest upstream version
 from the branch name). This can be used to updates all branches once a weekly release is
 published. If the rebase fails because of a merge conflict, the script stops and the
 issue must be resolved manually. Running this on an up-to-date branch doesn't do any harm.
+
+## Howtos
+
+* [Teacher with 150 courses in Moodle](teacher-with-150-courses.md) 
