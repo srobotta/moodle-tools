@@ -97,6 +97,8 @@ for b in $branches; do
     upbranch=MOODLE_400_STABLE
   elif [ "$suffix" == "401" ]; then
     upbranch=MOODLE_401_STABLE
+  elif [ "$suffix" == "402" ]; then
+    upbranch=MOODLE_402_STABLE
   fi
   
   if [ "$upbranch " != ' ' ]; then
