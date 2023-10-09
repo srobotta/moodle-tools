@@ -93,12 +93,8 @@ for b in $branches; do
   upbranch=''
   if [ "$suffix" == "master" ]; then
     upbranch=master
-  elif [ "$suffix" == "400" ]; then
-    upbranch=MOODLE_400_STABLE
-  elif [ "$suffix" == "401" ]; then
-    upbranch=MOODLE_401_STABLE
-  elif [ "$suffix" == "402" ]; then
-    upbranch=MOODLE_402_STABLE
+  elif [ "$(echo $suffix | grep -E '^[[:digit:]]+$')" != "" ]; then
+    upbranch=MOODLE_${suffix}_STABLE
   fi
   
   if [ "$upbranch " != ' ' ]; then
