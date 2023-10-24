@@ -27,7 +27,14 @@
 #
 ### Script Usage
 #
-# Usage: update_branches.sh [-d <srcdir> ] [ -u <upstream> ]
+# Usage: update_branches.sh [-d <srcdir> ] [ -e <exclude_branch> ] [ -n ] [ -u <upstream> ]
+#
+#   -d <srcdir> directory with the moodle code.
+#   -e <exclude_branch> may contain several branches separated by ",". It's also
+#      possible to just pass an mdl number to exclude all branches that have
+#      this number in the branch name.
+#   -n dry run, just show which branches would be handled without doing any changes.
+#   -u <upstream> name of the upstream git repo.
 #
 # You may also predefine the environment variables
 #   $MOODLE_DIR for the directory where your repo is checked out
@@ -45,15 +52,22 @@ for arg in "$@"; do
     exit
   elif [ "$arg" == '-d' ] || [ "$arg" == '-u' ]; then
     s=$arg
+  elif [ "$arg" == '-e' ]; then
+    s=$arg
+  elif [ "$arg" == '-n' ]; then
+    dryrun=1
   elif [ "$s" == '-d' ]; then
     repodir=$arg
     s=''
   elif [ "$s" == '-u' ]; then
     upstream=$arg
     s=''
+  elif [ "$s" == '-e' ]; then
+    exclude=$arg
+    s=''
   else
     echo "Invalid argument or missing switch"
-    echo "Usage: $(basename $0) [-d <srcdir> ] [ -u <upstream> ]"
+    echo "Usage: $(basename $0) [-d <srcdir> ] [ -e <exclude_branch> ] [ -n ] [ -u <upstream> ]"
     exit 1
   fi
 done
@@ -86,9 +100,19 @@ CWD=$(pwd)
 cd $repodir
 
 git fetch $upstream
- 
+
 branches=$(git branch | tr -d \*)
 for b in $branches; do
+  if [ ! -z $exclude ]; then
+    excl=$(echo $exclude | tr "," "\n")
+    for exclbr in $excl; do
+      if [[ "$b" =~ "$exclbr" ]]; then
+        echo "Exclude branch $b"
+        continue 2
+      fi
+    done
+  fi
+
   suffix="${b##*-}"
   upbranch=''
   if [ "$suffix" == "master" ]; then
@@ -96,7 +120,12 @@ for b in $branches; do
   elif [ "$(echo $suffix | grep -E '^[[:digit:]]+$')" != "" ]; then
     upbranch=MOODLE_${suffix}_STABLE
   fi
-  
+
+  if [ ! -z $dryrun ]; then
+    echo "Dry run: $b"
+    continue
+  fi
+
   if [ "$upbranch " != ' ' ]; then
     git checkout $b
     if [ $? -ne 0 ]; then
