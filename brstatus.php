@@ -206,8 +206,9 @@ function printTable(array $branches, array $tableCols, int $maxWidth, string $da
 $repodir    = getenv('MOODLE_DIR') ?: getcwd();
 $maxWidth   = 45;
 $cols       = ['branch', 'title', 'status', 'updated', 'resolved', 'assignee'];
-$cols_all   = ['branch', 'title', 'status', 'statusId','created','updated',
-        'resolved', 'assignee','reporter', 'resolution','resolutionId', 'priority','priorityId','type', 'typeId'];
+$cols_all   = ['branch', 'title', 'status', 'statusId', 'created', 'updated',
+    'resolved', 'assignee', 'reporter', 'resolution', 'resolutionId', 'priority',
+    'priorityId', 'type', 'typeId'];
 $dateFormat = 'Y-m-d';
 
 // start handling command line args
@@ -229,9 +230,9 @@ while ($arg = array_shift($args)) {
         if (empty($argv)) {
             dieNice('Argument -c needs column names separated by ","');
         }
-        if($argv === 'ALL'){
+        if ($argv === 'ALL') {
             $cols = $cols_all;
-        }else {
+        } else {
             $cols = [];
             foreach (explode(',', $argv) as $col) {
                 $col = trim($col);
