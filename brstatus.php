@@ -7,6 +7,8 @@
  * -c: Provide a list of column names that is displayed in the output. Valid column names are:
  *     branch, mdl, title, type, typeId, priority, priorityId, status, statusId,
  *     resolution, resolutionId, created, updated, resolved, assignee, reporter
+ *     Default is 'branch', 'title', 'status', 'updated', 'resolved', 'assignee'
+ *     Set it to 'ALL' to see all available columns.
  * -d: The directory where your moodle repo is checked out. Can be also defined via the
  *     environment variable $MOODLE_DIR. If both are empty, the current working dir is used.
  * -m: Maximum col width, default is 45. Set 0 when truncation of values is not wanted.
@@ -141,6 +143,7 @@ function getTrackerInfo(int $issueNo, string $dateFormat): array
  */
 function printTable(array $branches, array $tableCols, int $maxWidth, string $dateFormat)
 {
+    $colOther='';
     // start a new table, fill the first row with the desired col names.
     $table = [];
     $width = []; // store max width for each col, needed for nice output.
@@ -148,8 +151,11 @@ function printTable(array $branches, array $tableCols, int $maxWidth, string $da
         $table[0][$col] = $col;
         $width[$col] = mb_strlen($col);
     }
+
     // name for the other col in case there is an error and branch and col is displayed only.
-    $colOther = $tableCols[1] !== 'branch' ? $tableCols[1] : $tableCols[0];
+    if(isset($tableCols[1])) {
+        $colOther = $tableCols[1] !== 'branch' ? $tableCols[1] : $tableCols[0];
+    }
     // store here the fetched tracker data for each issue, key is the issue number
     $info = [];
     foreach ($branches as $branch) {
@@ -197,9 +203,11 @@ function printTable(array $branches, array $tableCols, int $maxWidth, string $da
 // Main program starts here
 
 // defaults
-$repodir    = getenv('$MOODLE_DIR') ?: getcwd();
+$repodir    = getenv('MOODLE_DIR') ?: getcwd();
 $maxWidth   = 45;
 $cols       = ['branch', 'title', 'status', 'updated', 'resolved', 'assignee'];
+$cols_all   = ['branch', 'title', 'status', 'statusId','created','updated',
+        'resolved', 'assignee','reporter', 'resolution','resolutionId', 'priority','priorityId','type', 'typeId'];
 $dateFormat = 'Y-m-d';
 
 // start handling command line args
@@ -221,14 +229,20 @@ while ($arg = array_shift($args)) {
         if (empty($argv)) {
             dieNice('Argument -c needs column names separated by ","');
         }
-        $cols = [];
-        foreach (explode(',', $argv) as $col) {
-            $col = trim($col);
-            if (empty($col) || in_array($col, $cols)) continue;
-            $cols[] = $col;
-        }
-        if (!in_array('branch', $cols)) {
-            array_unshift($cols, 'branch');
+        if($argv === 'ALL'){
+            $cols = $cols_all;
+        }else {
+            $cols = [];
+            foreach (explode(',', $argv) as $col) {
+                $col = trim($col);
+                if (empty($col) || in_array($col, $cols)) {
+                    continue;
+                }
+                $cols[] = $col;
+            }
+            if (!in_array('branch', $cols)) {
+                array_unshift($cols, 'branch');
+            }
         }
     } elseif ($arg === '-m') {
         $argv = array_shift($args);
