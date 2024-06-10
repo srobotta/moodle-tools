@@ -115,8 +115,8 @@ for b in $branches; do
 
   suffix="${b##*-}"
   upbranch=''
-  if [ "$suffix" == "master" ]; then
-    upbranch=master
+  if [ "$suffix" == "master" ] || [ "$suffix" == "main" ]; then
+    upbranch=$suffix
   elif [ "$(echo $suffix | grep -E '^[[:digit:]]+$')" != "" ]; then
     upbranch=MOODLE_${suffix}_STABLE
   fi
