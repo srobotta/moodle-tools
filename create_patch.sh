@@ -94,7 +94,7 @@ fi
 
 
 # file name for the diff is composed from the MDL number.
-mdl=$(git status | head -n 1 | grep -o '[0-9]*')
+mdl=$(git status | head -n 1 | grep -o '[0-9]*' | head -n 1)
 patchfile="${outdir}/mdl-${mdl}.patch"
 git diff $b $a > $patchfile
 
