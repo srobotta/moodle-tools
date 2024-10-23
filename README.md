@@ -13,6 +13,15 @@ in your working directory. It runs over all branches, from the branch name the a
 number is derived and with this number information from the Moodle Tracker are fetched. The
 result is a list with branch names and the corresponding ticket information.
 
+## dbdump.sh
+
+Assuming that you use the [Moodle-Docker](https://github.com/moodlehq/moodle-docker) setup to
+develop for Moodle, this script makes a dump and a restore of the database. I find it useful
+to dump the data before doing an upgrade or before installing a plugin, so that with the
+restore process I can eassily switch back to an older version. Also for testing upgrade
+processes of a plugin where data is changed, this lets you easily repeat the process during
+the test phase in the development.
+
 ## create_patch.sh
 
 Helps me to create a patch when I am working on a ticket and I need to apply the same changes
