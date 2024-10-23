@@ -83,7 +83,7 @@ if [ $RESTORE_MODE -eq 1 ]; then
     echo "No dump file found: $RESTORE_FILE"
     exit 1
   fi
-  zcat $RESTORE_FILE | docker exec -i $dbcontainer /usr/bin/pg_restore -U ${dbuser} -d ${dbname}
+  zcat $RESTORE_FILE | docker exec -i $dbcontainer /usr/bin/psql -U ${dbuser} -d ${dbname}
   exit 0
 fi
 # Here we are in backup mode.
@@ -102,5 +102,5 @@ else
   prefix=$dbname
 fi
 suffix=`date +%Y-%m-%d-%H-%M`.sql.gz
-docker exec -i $dbcontainer /usr/bin/pg_dump -U ${dbuser} -d ${dbname} ${tablearg} | \
+docker exec -i $dbcontainer /usr/bin/pg_dump -U ${dbuser} -d ${dbname} ${tablearg} -c | \
   gzip > $DUMP_DIR/${prefix}-${suffix} 2>&1
