@@ -30,6 +30,13 @@ the script looks up the last two commits, that should be the latest from the Moo
 and the last one containing the changes to resolve the ticket. The diff is written into
 a patch file that can be used with git apply.
 
+## download-questions-from-quiz.sh
+
+Script that downloads the questions of a quiz in the Moodle XML format. The script needs
+the credentials of your Moodle login and the Moodle domain. It then uses curl and other
+shell tools to login to Moodle, call the quiz page, from there extract the question ids
+and call the export xml on each question. The result is combined into a single xml file.
+
 ## update_branches.sh
 
 Runs over all existing branches and does a rebase to the latest upstream version (derived
