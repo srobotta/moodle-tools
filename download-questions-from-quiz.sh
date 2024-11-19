@@ -69,8 +69,10 @@ done
 rm $cookiefile
 rm quiz.$$
 # Check if there is content in the quiz.xml.
-lines=$(wc -l $1.xml | cut -d ' ' -f 1)
-if [ $lines -lt 4 ]; then
+lines=$(wc -l < "$1.xml")
+# Setting default to avoid exception if empty
+lines=${lines:-0}
+if [ "$lines" -lt 4 ]; then
   echo 'No questions found, maybe the quiz id is wrong.'
   rm $1.xml
   exit 1
