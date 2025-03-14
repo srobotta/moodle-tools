@@ -45,9 +45,6 @@ if [[ ! $1 =~ $regex ]]; then
   exit 1
 fi
 
-# Create a new qbank.xml file and write opening tag.
-echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<quiz>\n" > $1.xml
-
 # Login
 cookiefile=`basename $0`.cookie
 curl -s -L -X POST -d "username=${USERNAME}&password=${PASSWORD}" -c $cookiefile \
