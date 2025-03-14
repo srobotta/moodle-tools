@@ -37,6 +37,14 @@ the credentials of your Moodle login and the Moodle domain. It then uses curl an
 shell tools to login to Moodle, call the quiz page, from there extract the question ids
 and call the export xml on each question. The result is combined into a single xml file.
 
+## export-qbank.sh
+
+Exports all questions and the category hierachy from a question bank. It basically uses
+the export function of Moodle to get the xml with the questions. The input parameter is
+the question bank id. The script works very similar to the `download-questions-from-quiz.sh`.
+The script was developed for the new questionbank feature from >4.6. It might work with
+lower versions for Moodle as well.
+
 ## update_branches.sh
 
 Runs over all existing branches and does a rebase to the latest upstream version (derived
