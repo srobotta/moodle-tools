@@ -71,9 +71,13 @@ dbuser=`cat ${MOODLE_YAML} | grep DBUSER`
 dbuser=`echo ${dbuser#*:} | xargs`
 
 # Get the container id of the running db container.
-dbcontainer=`docker ps | grep db | awk '{print $1}'`
-if [ -z $dbcontainer ]; then
+dbcontainer=`docker ps | grep -E '[a-zA-Z0-9\-]+db' | awk '{print $1}'`
+if [ "$dbcontainer " == " " ]; then
   echo "No db container found."
+  exit 1
+fi
+if [[ $dbcontainer =~ [[:space:]] ]]; then
+  echo -e "Too many matches for db container found:\n$dbcontainer"
   exit 1
 fi
 
@@ -104,3 +108,10 @@ fi
 suffix=`date +%Y-%m-%d-%H-%M`.sql.gz
 docker exec -i $dbcontainer /usr/bin/pg_dump -U ${dbuser} -d ${dbname} ${tablearg} -c | \
   gzip > $DUMP_DIR/${prefix}-${suffix} 2>&1
+# Check for reasonable file size and report error when to small.
+fsize=$(stat --printf="%s" $DUMP_DIR/${prefix}-${suffix})
+if [ $fsize -lt 1200 ]; then
+  echo "File too small, dump failed."
+  rm $DUMP_DIR/${prefix}-${suffix}
+  exit 1
+fi
