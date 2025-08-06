@@ -54,4 +54,5 @@ issue must be resolved manually. Running this on an up-to-date branch doesn't do
 
 ## Howtos
 
+* [Behat Cheat Sheet](behat.md)
 * [Teacher with 150 courses in Moodle](teacher-with-150-courses.md) 
