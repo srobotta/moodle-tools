@@ -45,6 +45,12 @@ the question bank id. The script works very similar to the `download-questions-f
 The script was developed for the new questionbank feature from >4.6. It might work with
 lower versions for Moodle as well.
 
+## moodle-rsync.sh
+
+I use this script to synchronize my plugin development from a sepatate folder
+where the repo is checked out, with my moodle installation where I actually do
+the development and test my changes.
+
 ## update_branches.sh
 
 Runs over all existing branches and does a rebase to the latest upstream version (derived
