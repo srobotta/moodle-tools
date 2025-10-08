@@ -1,39 +1,49 @@
 #!/bin/bash
 
-# Use case:
+## Use case
+#
 # You have your moodle code for dev environment some where at e.g.
 # ~/workspace/moodle
 # and an additional plugin that you work on, checked out at:
-# ~/workspace/moodle-frankenstylepluginname
+# ~/workspace/moodle-frankenstyle_pluginname
 # and you must synchronize the separate plugin under git control
 # with the install dir of the plugin in your Moodle installation.
-# In the past, I used two separate scripts inside each checked
-# out plugin dir, this script and it's couterpart should combine
-# the work instead of having two script in each plugin.
+# In the past, I used two separate scripts inside each plugin
+# repo that I have checked out. This script handles both of these
+# individual scripts, automates the directory naming and should be
+# generic for all plugin development, instead of having two scripts
+# in each plugin directory (which need to be excluded via
+# .git/info/exclude) from any commits.
 #
-# Usage:
-# Change to the directory where your plugin is installed and where
+## Usage
+#
+# Change to the directory where your plugin is checked out and where
 # you handle all git related commands. From here you want to
 # synchronize your moodle dev environment with the latest version
-# of the plugin:
-# rsync-moodle.sh
-# Optional arguments
-# -m <dir> target directory of your moodle src dir.
-# -n test only, without actually copying the files.
-# -p <dir> plugin dir where the code is pushed to.
-# -r reverse: copy the code from the moodle dir into the
-#    plugin dir.
+# of the plugin.
 #
-# Configuration:
-# use the environment variables:
+# rsync-moodle.sh
+# Optional arguments:
+# -m <dir> The base directory of your moodle installation.
+# -n Test only, without actually copying the files.
+# -p <dir> The exact plugin dir where the code is pushed to.
+# -r Reverse: copy the code from the moodle dir into the current
+#    working directory of the plugin (e.g. you have developed
+#    your plugin and need to commit and push the changes to the
+#    plugin repository).
+#
+## Configuration
+#
+# Use the environment variables:
 # MOODLE_SRC_DIR = Directory where your moodle installation is
-#                  located at. Use of -m overrides this.
+#                  located at. Use of -m or -p overrides this.
 #
 # In my ~/bin directory I created two files that call this script.
-# There is rsync_moodle.sh with the conten:
+# There is rsync_moodle.sh with the content:
 # ~/workspace/moodle-tools/rsync-moodle.sh $@
 # and moodle_rsync.sh with the content:
-# ~/workspace/moodle-tools/rsync-moodle.sh -r $@
+# ~/workspace/moodle-tools/moodle-rsync.sh -r $@
+# that replaces the scripts which I had inside each plugin.
 ### End Help
 
 TEST_ONLY=0
@@ -50,14 +60,22 @@ parse_name() {
   type="${part1%%_*}"
   name="${part1#*_}"
   
-  # Tiny has a different location:
-  if [ "$type" == "tiny" ]; then
-    type="lib/editor/tiny/plugins"
-  elif [ "$type" == "qbank" ]; then
-    type="question/bank"
-  elif [ "$type" == "qtype" ]; then
-    type="question/type"
-  fi
+  # Some plugins have a different location that is not just the
+  # type used as a directory name. The list here is inclomplete...
+  case $type in
+    tiny)
+      type="lib/editor/tiny/plugins"
+      ;;
+    qbank | qtype | qbehaviour | qformat)
+      type="question/q$type"
+      ;;
+    quiz)
+      type="mod/quiz/report"
+      ;;
+    datafield)
+      type="mod/data/field"
+      ;;
+  esac
 }
 # Check for directory arguments and set them for the rsync command
 eval_arg_dir() {
