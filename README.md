@@ -47,9 +47,15 @@ lower versions for Moodle as well.
 
 ## moodle-rsync.sh
 
-I use this script to synchronize my plugin development from a sepatate folder
+I use this script to synchronize my plugin development from a separate folder
 where the repo is checked out, with my moodle installation where I actually do
 the development and test my changes.
+
+## release-plugin.sh
+
+This script can be used to create releases automatically on moodle.org and github.com using
+the APIs of these sites. You must have personal access tokens before the releases can be
+published.
 
 ## update_branches.sh
 
@@ -57,6 +63,19 @@ Runs over all existing branches and does a rebase to the latest upstream version
 from the branch name). This can be used to updates all branches once a weekly release is
 published. If the rebase fails because of a merge conflict, the script stops and the
 issue must be resolved manually. Running this on an up-to-date branch doesn't do any harm.
+
+## Notes
+
+While I have the repo at a certain place, I use some of these scripts via the `bin` directory
+in my user account, which is included in the `PATH` variable. Inside this directory I
+either have a symbolic link to the version in the checked out repository directory or
+I use a wrapper script and set some variables for a certain configuration.
+
+```
+#!/bin/bash
+export SOME_SETTING=foobar
+~/workspace/moodle-tools/somescript.sh -optionalvar $@
+```
 
 ## Howtos
 
