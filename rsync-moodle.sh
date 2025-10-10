@@ -67,7 +67,7 @@ parse_name() {
       type="lib/editor/tiny/plugins"
       ;;
     qbank | qtype | qbehaviour | qformat)
-      type="question/q$type"
+      type="question/${type:1}"
       ;;
     quiz)
       type="mod/quiz/report"
