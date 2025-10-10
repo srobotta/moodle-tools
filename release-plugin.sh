@@ -159,7 +159,7 @@ if [ "$tagVerified" != $GIT_TAG ]; then
   echo "Git tag $GIT_TAG not found."
   exit 4
 fi
-releaseDescription=$(git show -s --format=%B $GIT_TAG | grep -Ev '^(Tagger:|tag )')
+releaseDescription=$(git show -s --format=%N $GIT_TAG | grep -Ev '^(Tagger:|tag )' | awk '{printf "%s\\n", $0}')
 
 # Run the command to create a new release on github.com.
 if [ $RELEASE_TO_GITHUB -eq 1 ]; then
