@@ -75,6 +75,9 @@ parse_name() {
     datafield)
       type="mod/data/field"
       ;;
+    availability)
+      type="availability/condition"
+      ;;
   esac
 }
 # Check for directory arguments and set them for the rsync command
