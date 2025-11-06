@@ -161,4 +161,4 @@ if [ $TEST_ONLY -eq 1 ]; then
 fi
 
 # Not the .git files but the .github should be included.
-$rsync --exclude=".git/" $SRC/ $DEST/ --delete
+$rsync --exclude=.git/* $SRC/ $DEST/ --delete
