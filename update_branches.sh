@@ -14,16 +14,16 @@
 # upstream	git://git.moodle.org/moodle.git (push)
 #
 # My branch names follow this convention:
-# - a branch from the current master is trailed by master
-# - a branch from the 4.0 stable branch is trailed by 400
-# - a branch from the 3.11 stable branch is trailed by 311
-# My branches follow this schema: MDL-XXXXX-[master|400|311]
+# - a branch from the current main is trailed by main
+# - a branch from the 4.5 stable branch is trailed by 405
+# - a branch from the 5.0 stable branch is trailed by 500
+# My branches follow this schema: MDL-XXXXX-[main|405|500]
 # To setup upstream correctly in any branch that I use, the
-# checkout is done like: git -b MDL-XXX-master upstream/master
-# or if it is a release branch: git -b MDL-XXX-401 upstream/MOODLE_401_STABLE
+# checkout is done like: git -b MDL-XXX-main upstream/main
+# or if it is a release branch: git -b MDL-XXX-405 upstream/MOODLE_405_STABLE
 # If upstream is something different, you may reassign a new source
 # by checking out the branch and then do a:
-# git branch --set-upstream-to upstream/master
+# git branch --set-upstream-to upstream/main
 #
 ### Script Usage
 #
@@ -40,6 +40,7 @@
 #   $MOODLE_DIR for the directory where your repo is checked out
 #               (default is ~/workspace/moodle)
 #   $MOODLE_UPSTREAM for the upstream reference (default is upstream)
+#   $MOODLE_EXCLUDE for branches to exclude
 #
 # Variables can be passed like: export MOODLE_DIR=/path/to/your/moodle_repo
 # before running this script.
@@ -92,8 +93,15 @@ if [ -z $upstream ]; then
   fi
 fi
 
+if [ -z $exclude ]; then
+  if [ ! -z $MOODLE_EXCLUDE ]; then
+    exclude=$MOODLE_EXCLUDE
+  fi
+fi
+
 echo "upstream: $upstream"
 echo "repository directory: $repodir"
+echo "exclude branches: $exclude"
 echo "start rebasing your branches"
 
 CWD=$(pwd)
@@ -116,7 +124,7 @@ for b in $branches; do
   suffix="${b##*-}"
   upbranch=''
   if [ "$suffix" == "master" ] || [ "$suffix" == "main" ]; then
-    upbranch=$suffix
+    upbranch=main
   elif [ "$(echo $suffix | grep -E '^[[:digit:]]+$')" != "" ]; then
     upbranch=MOODLE_${suffix}_STABLE
   fi
@@ -133,6 +141,9 @@ for b in $branches; do
       exit 1
     fi
     br_up=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
+    if [ "$br_up" == 'upstream/master' ] || [ "$br_up " == ' ' ]; then
+      br_up='upstream/main'
+    fi
     if [ "$br_up" != "$upstream/$upbranch" ]; then
       echo "skip $b because remote location is not $upstream but $br_up"
       continue
