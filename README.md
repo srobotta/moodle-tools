@@ -6,6 +6,8 @@ to handle.
 Each of these scripts has a --help switch. Use this or look into the source code to get
 more specific information about any of these tools.
 
+All material distributed in this repository is published under the GPLv3 license.
+
 ## brstatus.php
 
 This script fetches Moodle tracker information based on the existing branches that are existing
@@ -80,4 +82,5 @@ export SOME_SETTING=foobar
 ## Howtos
 
 * [Behat Cheat Sheet](behat.md)
-* [Teacher with 150 courses in Moodle](teacher-with-150-courses.md) 
+* [Teacher with 150 courses in Moodle](teacher-with-150-courses.md)
+* [Analyse moodle data dir usage](moodle-data-usage/README.md)
