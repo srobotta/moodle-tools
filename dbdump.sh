@@ -71,7 +71,7 @@ dbuser=`cat ${MOODLE_YAML} | grep DBUSER`
 dbuser=`echo ${dbuser#*:} | xargs`
 
 # Get the container id of the running db container.
-dbcontainer=`docker ps --format='table {{.ID}}\t{{.Names}}' | grep -E '[a-zA-Z0-9\-]+db' | awk '{print $1}'`
+dbcontainer=`docker ps --format='table {{.ID}}\t{{.Names}}' | grep -E ' [a-zA-Z0-9\-]+db' | awk '{print $1}'`
 if [ "$dbcontainer " == " " ]; then
   echo "No db container found."
   exit 1
