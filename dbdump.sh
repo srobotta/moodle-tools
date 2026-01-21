@@ -13,6 +13,7 @@
 #    is used.
 # -d dump dir where the dumps are written to, when not given the
 #    current working directory is used.
+# -i container id of database container.
 # -r switch to restore mode, the given argument is the dump file
 #    that is supposed to be restored.
 # -t table name or pattern to dump this/these table(s) only.
@@ -24,6 +25,7 @@ DUMP_DIR=''
 RESTORE_MODE=0
 RESTORE_FILE=''
 TABLE_NAME=''
+DB_CONTAINER_ID=''
 
 # Parse the arguments.
 s=''
@@ -32,7 +34,7 @@ for arg in "$@"; do
     end=$(grep -nE '^### End Help' $0 | cut -d ':' -f 1)
     head $0 -n $(($end - 1)) | grep  -v \#\! | sed 's|^# \?||g'
     exit
-  elif [ "$arg" == '-c' ] || [ "$arg" == '-d' ] || [ "$arg" == '-t' ]; then
+  elif [ "$arg" == '-c' ] || [ "$arg" == '-d' ] || [ "$arg" == '-i' ]  || [ "$arg" == '-t' ]; then
     s=$arg
   elif [ "$arg" == '-r' ]; then
     RESTORE_MODE=1
@@ -42,6 +44,9 @@ for arg in "$@"; do
     s=''
   elif [ "$s" == '-d' ]; then
     DUMP_DIR=$arg
+    s=''
+  elif [ "$s" == '-i' ]; then
+    DB_CONTAINER_ID=$arg
     s=''
   elif [ "$s" == '-r' ]; then
     RESTORE_FILE=$arg
@@ -71,14 +76,18 @@ dbuser=`cat ${MOODLE_YAML} | grep DBUSER`
 dbuser=`echo ${dbuser#*:} | xargs`
 
 # Get the container id of the running db container.
-dbcontainer=`docker ps --format='table {{.ID}}\t{{.Names}}' | grep -E ' [a-zA-Z0-9\-]+db' | awk '{print $1}'`
-if [ "$dbcontainer " == " " ]; then
-  echo "No db container found."
-  exit 1
-fi
-if [[ $dbcontainer =~ [[:space:]] ]]; then
-  echo -e "Too many matches for db container found:\n$dbcontainer"
-  exit 1
+if [ "$DB_CONTAINER_ID " == ' ' ]; then
+  dbcontainer=`docker ps --format='table {{.ID}}\t{{.Names}}' | grep -E ' [a-zA-Z0-9\-]+db' | awk '{print $1}'`
+  if [ "$dbcontainer " == " " ]; then
+    echo "No db container found."
+    exit 1
+  fi
+  if [[ $dbcontainer =~ [[:space:]] ]]; then
+    echo -e "Too many matches for db container found:\n$dbcontainer"
+    exit 1
+  fi
+else
+  dbcontainer=$DB_CONTAINER_ID
 fi
 
 # If restore mode is set, restore the database from the given dump file (in $DUMP_DIR).
