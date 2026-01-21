@@ -31,6 +31,7 @@
 #    working directory of the plugin (e.g. you have developed
 #    your plugin and need to commit and push the changes to the
 #    plugin repository).
+# -v Print out source and target dir.
 #
 ## Configuration
 #
@@ -48,6 +49,7 @@
 
 TEST_ONLY=0
 REVERSE=0
+VERBOSE=0
 
 # Examining the plugin type
 parse_name() {
@@ -114,6 +116,9 @@ for arg in "$@"; do
   elif [ "$arg" == '-n' ]; then
     TEST_ONLY=1
     s=''
+  elif [ "$arg" == '-v' ]; then
+    VERBOSE=1
+    s=''
   elif [ "$arg" == '-r' ]; then
     REVERSE=1
     s=''
@@ -158,6 +163,10 @@ fi
 rsync="rsync -av"
 if [ $TEST_ONLY -eq 1 ]; then
   rsync+="n"
+fi
+
+if [ $VERBOSE -eq 1 ]; then
+  echo "Copy: $SRC -> $DEST"
 fi
 
 # Not the .git files but the .github should be included.
