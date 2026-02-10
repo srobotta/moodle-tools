@@ -53,7 +53,8 @@ VERBOSE=0
 
 # Examining the plugin type
 parse_name() {
-  # Assuming we are in the plugin directory
+  # Assuming we are in the plugin directory that looks like
+  # moodle-type_name
   local franken=$(basename $(pwd))
   # Remove prefix up to the first dash
   local part1="${franken#*-}"
