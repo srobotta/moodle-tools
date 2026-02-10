@@ -53,11 +53,9 @@ VERBOSE=0
 
 # Examining the plugin type
 parse_name() {
-  # Assuming we are in the plugin directory that looks like
-  # moodle-type_name
-  local franken=$(basename $(pwd))
-  # Remove prefix up to the first dash
-  local part1="${franken#*-}"
+  # Assuming we are in the plugin directory that contains the version.php file with the component definition.
+  local component=$1
+  local part1="${component#*-}"
 
   # Split by underscore
   type="${part1%%_*}"
@@ -102,7 +100,17 @@ eval_arg_dir() {
 
 # Check if we are actually in a plugin directory.
 line=$(grep component version.php 2>/dev/null)
-parse_name
+if [ $? -ne 0 ]; then
+  echo "version.php file not found in the current directory."
+  exit 1
+fi
+if [[ ! $line == *"plugin->component"* ]]; then
+  echo "version.php file does not contain the component definition."
+  exit 1
+fi
+[[ $line =~ [\'\"]([^\'\"]+)[\'\"] ]] && component="${BASH_REMATCH[1]}"
+
+parse_name $component
 if [[ ! $line == *"_${name}"* ]]; then
   echo "The current dirctory does not seem to contain a Moodle plugin."
   exit 1
@@ -145,7 +153,7 @@ if [ $REVERSE -eq 0 ]; then
   if [ ! -d $DEST ] && [ $TEST_ONLY -ne 1 ]; then
     mkdir -p $DEST
     if [ $? -ne 0 ]; then
-      echo "Destination dir does not exist and count not be created: $DEST"
+      echo "Destination dir does not exist and can not not be created: $DEST"
       exit 4
     fi
   fi
