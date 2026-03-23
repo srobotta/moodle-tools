@@ -79,6 +79,9 @@ parse_name() {
     availability)
       type="availability/condition"
       ;;
+    tool)
+      type="admin/tool"
+      ;;
   esac
 }
 # Check for directory arguments and set them for the rsync command
