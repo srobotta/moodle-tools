@@ -8,6 +8,12 @@ more specific information about any of these tools.
 
 All material distributed in this repository is published under the GPLv3 license.
 
+## backup-moodle-data.sh
+
+Script to backup the moodle data directory from inside the docker container to an arbitrary
+directory on the host system. Also, with the option -r and a backup directory on the host
+system, this content will be put into the moodle data directory of the container.
+
 ## brstatus.php
 
 This script fetches Moodle tracker information based on the existing branches that are existing
