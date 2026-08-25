@@ -160,6 +160,7 @@ if [ "$tagVerified" != $GIT_TAG ]; then
   exit 4
 fi
 releaseDescription=$(git show -s --format=%N $GIT_TAG | grep -Ev '^(Tagger:|tag )' | awk '{printf "%s\\n", $0}')
+releaseDescription="${releaseDescription//\"/\\\"/}"
 
 # Run the command to create a new release on github.com.
 if [ $RELEASE_TO_GITHUB -eq 1 ]; then
