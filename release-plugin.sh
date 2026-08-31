@@ -189,10 +189,10 @@ fi
 # Run the command to create a new release on moodle.org.
 if [ $RELEASE_TO_MOODLE -eq 1 ]; then
   zipurl="https://api.github.com/repos/${owner}/${repoName}/zipball/${GIT_TAG}"
-  #wget -O /tmp/${repoName}.zip $zipurl
   response=$(curl -s -X POST \
     -H "Authorization: Bearer ${MOODLE_ORG_TOKEN}" \
     -F "fileUrl=${zipurl}" \
+    -F "releaseNotes=\"$(echo -e $releaseDescription)\"" \
     "https://marketplace.moodle.com/api/plugins/${pluginName}/versions")
   echo "Response from moodle.org:"
   echo $response | jq
