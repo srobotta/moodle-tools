@@ -189,16 +189,11 @@ fi
 # Run the command to create a new release on moodle.org.
 if [ $RELEASE_TO_MOODLE -eq 1 ]; then
   zipurl="https://api.github.com/repos/${owner}/${repoName}/zipball/${GIT_TAG}"
-  response=$(curl -s https://moodle.org/webservice/rest/server.php \
-    --data-urlencode "wstoken=${MOODLE_ORG_TOKEN}" \
-    --data-urlencode "wsfunction=local_plugins_add_version" \
-    --data-urlencode "moodlewsrestformat=json" \
-    --data-urlencode "frankenstyle=${pluginName}" \
-    --data-urlencode "zipurl=${zipurl}" \
-    --data-urlencode "vcssystem=git" \
-    --data-urlencode "vcsrepositoryurl=https://github.com/${owner}/${repoName}" \
-    --data-urlencode "vcstag=${GIT_TAG}" \
-    --data-urlencode "altdownloadurl=${zipurl}")
+  #wget -O /tmp/${repoName}.zip $zipurl
+  response=$(curl -s -X POST \
+    -H "Authorization: Bearer ${MOODLE_ORG_TOKEN}" \
+    -F "fileUrl=${zipurl}" \
+    "https://marketplace.moodle.com/api/plugins/${pluginName}/versions")
   echo "Response from moodle.org:"
   echo $response | jq
   if [ $? -ne 0 ]; then
