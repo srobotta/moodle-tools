@@ -12,16 +12,17 @@
 #
 # You need at least a token on github.com, see documentation at:
 # https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app
-# In your account (right upper corner click tthe icon) then go to
+# In your account (right upper corner click the icon) then go to
 # Settings -> Developer Settings -> Personal access tokens ->
 # Fine-grained-tokens. For the tokens permissions you may set
 # an expire date, I choose "All repositories" for repository access,
 # and the repository permissions "Contents" and "Workflows" to
 # read and write.
 #
-# You need a API token for moodle.org. Login at moodle.org and
-# navigate to Plugins (top navigation) -> API access (right navigation)
-# and create a new token.
+# You need a API token for the Moodle Marketplace. Login at
+# https://marketplace.moodle.com. In the top right corner click
+# on the usermenu -> Account settings -> Security and create a new
+# API token.
 #
 ## Usage
 #
@@ -56,7 +57,9 @@
 # via command line arguments.
 ### End Help
 
-# Some global switched that might be modified later.
+# Some global variables might be set in the environment already.
+# If they are undefined, set them to a default value, that can
+# still be overwritten by a cli parameter or a config file.
 if [ -z $RELEASE_TO_GITHUB ]; then
   RELEASE_TO_GITHUB=1
 fi
@@ -67,7 +70,7 @@ if [ -z $CONFIG_INI ]; then
   CONFIG_INI=~/.release-plugin.ini
 fi
 
-# Check dependecies.
+# Check dependencies that this script needs to have installed.
 for cmd in curl jq git; do
   if [ "$(which $cmd) " == " " ]; then
     echo "$cmd is required to run this script."
@@ -159,6 +162,7 @@ if [ "$tagVerified" != $GIT_TAG ]; then
   echo "Git tag $GIT_TAG not found."
   exit 4
 fi
+# Reformat the release description so that it can be used on GIT and MOODLE.
 releaseDescription=$(git show -s --format=%N $GIT_TAG | grep -Ev '^(Tagger:|tag )' | awk '{printf "%s\\n", $0}')
 releaseDescription="${releaseDescription//\"/\\\"/}"
 
@@ -186,7 +190,7 @@ EOF
   rm .temp.release-plugin.$$
 fi
 
-# Run the command to create a new release on moodle.org.
+# Run the command to create a new release on marketplace.moodle.com.
 if [ $RELEASE_TO_MOODLE -eq 1 ]; then
   zipurl="https://api.github.com/repos/${owner}/${repoName}/zipball/${GIT_TAG}"
   response=$(curl -s -X POST \
