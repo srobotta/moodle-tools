@@ -82,6 +82,9 @@ parse_name() {
     tool)
       type="admin/tool"
       ;;
+    booktool)
+      type="mod/book/tool"
+      ;;
   esac
 }
 # Check for directory arguments and set them for the rsync command
