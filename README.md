@@ -38,6 +38,12 @@ the script looks up the last two commits, that should be the latest from the Moo
 and the last one containing the changes to resolve the ticket. The diff is written into
 a patch file that can be used with git apply.
 
+## courseinfo.sh
+
+Scans a directory for *.mbz files and extracts the information of the course from the
+backup file. Alternatively takes a mbz file as an argument and extracts the information
+from this single file.
+
 ## download-questions-from-quiz.sh
 
 Script that downloads the questions of a quiz in the Moodle XML format. The script needs
