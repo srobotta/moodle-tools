@@ -38,12 +38,6 @@ the script looks up the last two commits, that should be the latest from the Moo
 and the last one containing the changes to resolve the ticket. The diff is written into
 a patch file that can be used with git apply.
 
-## courseinfo.sh
-
-Scans a directory for *.mbz files and extracts the information of the course from the
-backup file. Alternatively takes a mbz file as an argument and extracts the information
-from this single file.
-
 ## download-questions-from-quiz.sh
 
 Script that downloads the questions of a quiz in the Moodle XML format. The script needs
@@ -58,6 +52,12 @@ the export function of Moodle to get the xml with the questions. The input param
 the question bank id. The script works very similar to the `download-questions-from-quiz.sh`.
 The script was developed for the new questionbank feature from >4.6. It might work with
 lower versions for Moodle as well.
+
+## mbz-info.sh
+
+Scans a directory for *.mbz files and extracts the information of the course or activity
+from the backup file. Alternatively takes a mbz file as an argument and extracts the
+information from this single file.
 
 ## moodle-rsync.sh
 
