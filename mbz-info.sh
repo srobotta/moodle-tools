@@ -16,25 +16,26 @@ tmpdir="/tmp/courseinfo-$$"
 scandir=$(pwd)
 
 get_file_info () {
-  echo $(basename $1)
   mkdir -p $tmpdir
-  tar -zxvf $1 -C $tmpdir moodle_backup.xml > /dev/null 2&>1
-  if [ ! -f $tmpdir/moodle_backup.xml ]; then
+  tar -zxvf $1 -C $tmpdir moodle_backup.xml > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
     echo "Error, maybe not a Moodle backup file."
     exit $?
   fi
   # Backup type, whether a full course or some activities
   backup_type=$(xmllint --xpath "string(//information/details/detail/type)" $tmpdir/moodle_backup.xml)
   if [ "$backup_type" == 'course' ]; then
+    echo "Course backup: $(basename $1)"
     for t in id shortname fullname; do
       value=$(xmllint --xpath "string(//information/original_course_$t)" $tmpdir/moodle_backup.xml)
       printf "%-12s%s\n" "${t}:" "${value}"
     done
-    tar -zxvf $1 -C $tmpdir course/course.xml > /dev/null 2&>1
+    tar -zxvf $1 -C $tmpdir course/course.xml > /dev/null 2>&1
     catname=$(xmllint --xpath 'string(/course/category/name)' $tmpdir/course/course.xml)
     catid=$(xmllint --xpath 'string(/course/category/@id)' $tmpdir/course/course.xml)
     echo "category:   \"$catname\" ($catid)"
   elif [ "$backup_type" == 'activity' ]; then
+    echo "Activity backup: $(basename $1)"
     xmllint --xpath "//activities/activity" $tmpdir/moodle_backup.xml | grep -E '<modulename>|<title>' | while read l
     do
       if [[ $l =~ '<modulename>' ]]; then
