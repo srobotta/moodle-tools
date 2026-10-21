@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
+"""
+Imports a wordlist from a open office document into a h5p file. The H5P types that
+are suppoted are Flash Cards and Dialog Cards.
 
-# Imports a wordlist from a open office document into a dialog-card h5p object.
-# Usage: import-cards.py [-h] [--front <letter>] [--back <letter>] [--row <number>]
-#                        [--sheet <name>] [--title <text>] h5p_file ods_file
-# Input arguments are:
-#
-# h5p_file: File with the dialog-card object (will be overwritten with the new
-#           card content).
-# ods_file: Open office spreadsheet document file.
-# --front:  The column letter (defaults to A) for the items that go on the
-#           front side of the cards (the questions).
-# --back:   The column letter (defaults to B) for the items that go on the
-#           backside of the cards (the answers).
-# --row:    The number of the row where to start the import (to skip header lines,
-#           defaults to 1).
-# --sheet:  The name of the sheet in the open office spreadsheet to use, defaults
-#           to the first sheet in the spreadsheed document.
-# --title:  The title to set in the h5p (content/content.json and h5p.json). When
-#           omitted, the existing title is left unchanged.
+Usage: import-cards.py [-h] [--front <letter>] [--back <letter>] [--row <number>]
+                       [--sheet <name>] [--title <text>] h5p_file ods_file
+
+Input arguments are:
+h5p_file: File with the dialog-card or flash-card object (will be overwritten
+          with the new card content).
+ods_file: Open office spreadsheet document file.
+--front:  The column letter (defaults to A) for the items that go on the
+          front side of the cards (the questions).
+--back:   The column letter (defaults to B) for the items that go on the
+          backside of the cards (the answers).
+--row:    The number of the row where to start the import (to skip header lines,
+          defaults to 1).
+--sheet:  The name of the sheet in the open office spreadsheet to use, defaults
+          to the first sheet in the spreadsheed document.
+--title:  The title to set in the h5p (content/content.json and h5p.json). When
+          omitted, the existing title is left unchanged.
+"""
 
 import argparse
 import html
@@ -117,11 +120,23 @@ def extract_cards(ods_path, front_column, back_column, start_row, sheet_name):
 # Paths of the JSON files inside the h5p zip archive.
 CONTENT_PATH = "content/content.json"
 H5P_PATH = "h5p.json"
+LIBRARY_KEY = "mainLibrary"
+LIBRARIES = {
+    'H5P.Dialogcards': {
+        'collection': 'dialogs',
+        'center': True
+    }  ,
+    'H5P.Flashcards': {
+        'collection': 'cards',
+        'center': False,
+    }
+}
 
-
-def as_card_html(value):
+def as_card_html(value, center):
     """Wrap a card side's plain text in the centered paragraph markup that the
     dialog-card content uses, escaping any HTML-significant characters."""
+    if center == False:
+        return html.escape(value)
     return f'<p style="text-align:center;">{html.escape(value)}</p>'
 
 
@@ -135,16 +150,20 @@ def write_cards_to_h5p(h5p_path, cards, title=None):
         names = archive.namelist()
         if CONTENT_PATH not in names:
             raise ValueError(
-                f"{CONTENT_PATH!r} not found in {h5p_path!r}; is this a "
-                "dialog-card h5p file?"
+                f"{CONTENT_PATH!r} not found in {h5p_path!r}; is this a h5p file?"
             )
         content = json.loads(archive.read(CONTENT_PATH).decode("utf-8"))
         h5p_meta = json.loads(archive.read(H5P_PATH).decode("utf-8"))
+        if LIBRARY_KEY not in h5p_meta.keys():
+            raise ValueError(f"{LIBRARY_KEY!r} not found in {H5P_PATH!r}")
+        if h5p_meta[LIBRARY_KEY] not in LIBRARIES.keys():
+            raise ValueError(f"{h5p_meta[LIBRARY_KEY]!r} is not a supported H5P type.")
 
-    content["dialogs"] = [
+    settings = LIBRARIES[h5p_meta[LIBRARY_KEY]]
+    content[settings['collection']] = [
         {
-            "text": as_card_html(front),
-            "answer": as_card_html(back),
+            "text": as_card_html(front, settings['center']),
+            "answer": as_card_html(back, settings['center']),
             "tips": {},
         }
         for front, back in cards
