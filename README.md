@@ -96,3 +96,4 @@ export SOME_SETTING=foobar
 * [Behat Cheat Sheet](behat.md)
 * [Teacher with 150 courses in Moodle](teacher-with-150-courses.md)
 * [Analyse moodle data dir usage](moodle-data-usage/README.md)
+* [Reinstall H5P libraries](h5p/README.md)
