@@ -30,6 +30,14 @@ restore process I can eassily switch back to an older version. Also for testing 
 processes of a plugin where data is changed, this lets you easily repeat the process during
 the test phase in the development.
 
+## check-cron.sh
+
+A small shell script that checks whether the Moodle cron task is running correctly. This
+is checked by looking up the value of `lastcronstart` in the component `tool_task`. When
+a siteupgrade is pending or the cron service (in Moodle, not the daemon) was disabled then
+the settings value would not be updated. The script then returns an output and an exit
+code <> 0.
+
 ## create_patch.sh
 
 Helps me to create a patch when I am working on a ticket and I need to apply the same changes
