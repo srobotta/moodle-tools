@@ -8,7 +8,7 @@ new H5P type via the content bank but cannot store it because of a missing
 file. With the help of AI I was able to fix the problem and at my
 installion the H5P types do work again.
 
-## Check for the integrity
+### Check for the integrity
 
 The script `check_missing_h5p_libraries.php` checks for existence of files
 according to what is in the database. It does not modify anything.
@@ -39,7 +39,7 @@ Missing by filearea:
   libraries      986
 ```
 
-## Reinstall libaries
+### Reinstall libaries
 
 If the above script returns a lot of files missing as it did in my case the
 initial attempt was to run the scheduled task to reinstall the files:
@@ -103,3 +103,24 @@ Unique hashes : 0
 
 On a production system missing library files should not occure at any time.  This is rather an
 issue with docker containers that have been redeployed but the data volume is out of sync.
+
+## Import wordlist into dialog-card H5P
+
+The [H5P dialog-cards](https://h5p.org/dialog-cards) are a good way of memorizing vocabulary
+or similar content. However, when you have to create a list of dialogue cards in Moodle this
+is very much clicking. An easier way is to have the word list in a spreadsheet table and import
+it from there. That makes the handling a lot easier. The script `import-cards.py` does this
+on the command line. Requirements are a installed Python, an Open Office document and a (can
+be empty) H5P dialog-cards file (you can download an example from H5P.org).
+
+Having a spreadsheet document and the h5p file, the creating of the dialog cards is done this
+way:
+
+```
+./import-cards.py dialog-cards-620.h5p Vocabulary.ods --title 'My beginners vocabulary'
+```
+
+The script takes arguments for the columns for the front and the back side of the dialog
+card (default these are column A and B). Also header rows can be skipped when the data
+starts some lines further. A full list of arguments can be seen with `--help`. The mandatory
+arguments are both files, first the H5P file, second the ODS file.
