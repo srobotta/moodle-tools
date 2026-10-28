@@ -30,8 +30,8 @@
  *     php reset_h5p_libraries.php --run      # actually uninstall
  *
  * After --run, re-fetch the libraries:
- *     php public/admin/cli/scheduled_task.php -e='\core\task\h5p_get_content_types_task'
- *     php public/admin/cli/purge_caches.php
+ *     php admin/cli/scheduled_task.php -e='\core\task\h5p_get_content_types_task'
+ *     php admin/cli/purge_caches.php
  *
  * @package   core_h5p
  * @copyright 2026 Stephan Robotta
@@ -126,8 +126,8 @@ if ($options['run']) {
     cli_heading('Done');
     cli_writeln("Uninstalled $removed library record(s).");
     cli_writeln('Now re-fetch the content types and purge caches:');
-    cli_writeln("  php public/admin/cli/scheduled_task.php -e='\\core\\task\\h5p_get_content_types_task'");
-    cli_writeln('  php public/admin/cli/purge_caches.php');
+    cli_writeln("  php admin/cli/scheduled_task.php -e='\\core\\task\\h5p_get_content_types_task'");
+    cli_writeln('  php admin/cli/purge_caches.php');
 } else {
     cli_heading('Dry run complete');
     cli_writeln('Re-run with --run to actually uninstall.');
