@@ -6,29 +6,53 @@ rem falls back to the py launcher, then to python.
 
 setlocal
 set "SCRIPT=%~dp0import-cards-gui.py"
+set "EXEC="
+set "ARGS="
 
 rem Prefer pythonw.exe so no console window stays open behind the GUI.
 where pythonw >nul 2>nul
 if %errorlevel%==0 (
-    start "" pythonw "%SCRIPT%"
-    goto :eof
+    set "EXEC=pythonw"
+    goto checkpackage
 )
 
 rem Fall back to the Python launcher (py -w hides the console too).
 where py >nul 2>nul
 if %errorlevel%==0 (
-    start "" py -w "%SCRIPT%"
-    goto :eof
+    set "EXEC=py"
+    set "ARGS=-w"
+    goto checkpackage
 )
 
 rem Last resort: plain python (a console window may remain visible).
 where python >nul 2>nul
 if %errorlevel%==0 (
-    start "" python "%SCRIPT%"
-    goto :eof
+    set "EXEC=python"
+    goto checkpackage
 )
 
 echo Python was not found on your PATH.
 echo Please install Python from https://www.python.org/downloads/
 echo and make sure "Add Python to PATH" is checked during installation.
 pause
+goto :eof
+
+:checkpackage
+rem Check whether odfpy is installed.
+%EXEC% %ARGS% -c "import odf" >nul 2>nul
+
+if errorlevel 1 (
+    echo Installing required Python package odfpy...
+    %EXEC% %ARGS% -m pip install --user --no-input odfpy
+
+    if errorlevel 1 (
+        echo.
+        echo Cannot install required Python package odfpy.
+        pause
+        goto :eof
+    )
+)
+
+rem Launch the GUI.
+start "" %EXEC% %ARGS% "%SCRIPT%"
+goto :eof
