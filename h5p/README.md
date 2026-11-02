@@ -26,6 +26,18 @@ rows might be skipped with the argument `--row N` starting at line _N_ when the 
 preprended with headlines and column headers. A full list of arguments can be seen with
 `--help`. The mandatory arguments are both files, first the H5P file, second the ODS file.
 
+### GUI Wrapper
+
+There is a GUI wrapper `import-cards-gui.py`, written in Python with TK, so that this
+script should work on Linux, Windows and MacOS. The controls depend on the look an feel
+of the OS. The script basically controls the above command line tool by offering
+controls for each of the possible arguments.
+
+To make things even easier for Windows user, the GUI wrapper in Python can be launched
+with `import-cards-gui.bat` (via double click) which first checks the installed Python
+environment, then checks whether the required libraries are installed and then launches
+the GUI script to show the dialogue.
+
 ## Checking and updating the libraries
 
 It happens that the libraries are out of date or missing on the file system.
