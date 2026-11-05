@@ -38,7 +38,7 @@ pause
 goto :eof
 
 :checkpackage
-rem Check whether odfpy is installed.
+rem Check whether odfpy (reads .ods files) is installed.
 %EXEC% %ARGS% -c "import odf" >nul 2>nul
 
 if errorlevel 1 (
@@ -48,6 +48,21 @@ if errorlevel 1 (
     if errorlevel 1 (
         echo.
         echo Cannot install required Python package odfpy.
+        pause
+        goto :eof
+    )
+)
+
+rem Check whether openpyxl (reads .xlsx files) is installed.
+%EXEC% %ARGS% -c "import openpyxl" >nul 2>nul
+
+if errorlevel 1 (
+    echo Installing required Python package openpyxl...
+    %EXEC% %ARGS% -m pip install --user --no-input openpyxl
+
+    if errorlevel 1 (
+        echo.
+        echo Cannot install required Python package openpyxl.
         pause
         goto :eof
     )

@@ -7,7 +7,7 @@ or similar content. However, when you have to create a list of dialogue cards in
 starts into a lot of clicking to add one entry at a time. An easier way is to have the word
 list in a spreadsheet table and import it from there. This makes the handling a lot easier.
 The script `import-cards.py` does this on the command line. Requirements are a installed
-Python, an Open Office document and a H5P dialog-card or H5P flash-card file (you can
+Python, an Open Office or Excel document and a H5P dialog-card or H5P flash-card file (you can
 download an example from H5P.org). While dialog cards just allow text and easy flipping for
 self controlled learning, flash cards allow the user to type in the answer. Also, images
 are supported in flashcards (but not with this script).
