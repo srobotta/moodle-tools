@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
+Copyright 2026 Stephan Robotta
+Released under the terms of the GNU General Public Licence, version 3
+<http://www.gnu.org/licenses/>
+
 Imports a wordlist from a spreadsheet document into a h5p file. The H5P types that
 are suppoted are Flash Cards and Dialog Cards. The spreadsheet may be an open office
 document (.ods) or an Excel workbook (.xlsx); the format is chosen by the file suffix.

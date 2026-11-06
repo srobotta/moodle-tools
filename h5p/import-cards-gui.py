@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
+Copyright 2026 Stephan Robotta
+Released under the terms of the GNU General Public Licence, version 3
+<http://www.gnu.org/licenses/>
+
 A small graphical front-end for import-cards.py.
 
 It exposes every command-line option of import-cards.py as a form control,

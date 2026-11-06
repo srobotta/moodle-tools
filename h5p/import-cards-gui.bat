@@ -1,4 +1,9 @@
 @echo off
+
+rem Copyright 2026 Stephan Robotta
+rem Released under the terms of the GNU General Public Licence, version 3
+rem <http://www.gnu.org/licenses/>
+
 rem Windows launcher for import-cards-gui.py.
 rem Double-click this file to open the GUI without a console window.
 rem It runs the GUI with pythonw (no console); if pythonw is missing it
